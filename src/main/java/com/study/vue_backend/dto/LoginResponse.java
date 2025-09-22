@@ -1,5 +1,6 @@
 package com.study.vue_backend.dto;
 
+import com.study.vue_backend.entity.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,11 +10,13 @@ import lombok.ToString;
 @Setter
 @ToString
 public class LoginResponse {
-    private Long memberId;
-    private String token;
+    private Member member;
+    private String accessToken;
+    private String refreshToken;
 
-    public LoginResponse(Long memberId, String token) {
-        this.memberId = memberId;
-        this.token = token;
+    public LoginResponse(Member member, String accessToken, String refreshToken) {
+        this.member = member;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 }

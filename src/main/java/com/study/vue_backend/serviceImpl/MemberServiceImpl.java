@@ -25,11 +25,20 @@ public class MemberServiceImpl {
         return memberRepository.findByEmailAndPassword(email, password).orElseThrow(() -> new MemberNotFoundException("대상이 존재하지 않습니다."));
     }
 
+    public Member getMemberByEmail(String email){
+        return memberRepository.findByEmail(email).orElseThrow(() -> new MemberNotFoundException("대상이 존재하지 않습니다."));
+    }
+
     public LoginResponse login(LoginRequset loginRequset){
 
         Member m = memberRepository.findByEmailAndPassword(loginRequset.getEmail(), loginRequset.getPassword()).orElseThrow(() -> new MemberNotFoundException("대상이 존재하지 않습니다."));
-        String token = jwtProvider.generateToken(m.getMember_id(), m.getEmail());
+        String accessToken = jwtProvider.generateAccessToken(m.getMember_id(), m.getEmail(), m.getName());
+        String refreshToken = jwtProvider.generateRefreshToken(m.getMember_id(),  m.getEmail(), m.getName());
 
-        return new LoginResponse(m.getMember_id(), token);
+        return new LoginResponse(m, accessToken, refreshToken);
+    }
+
+    public LoginResponse validToken(String accessToken, String refreshToken){
+        return null;
     }
 }

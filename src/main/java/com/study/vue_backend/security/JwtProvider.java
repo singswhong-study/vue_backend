@@ -13,14 +13,19 @@ import java.util.Date;
 public class JwtProvider {
 
     private final Key SECRET_KEY;
-    private static final long ACCESS_TOKEN_VALID = 3 * 60 * 1000L;
+//    private static final long ACCESS_TOKEN_VALID = 3 * 60 * 1000L;
+//
+//    private static final long REFRESH_TOKEN_VALID = 7 * 24 * 60 * 60 * 1000L;
+    private static final long ACCESS_TOKEN_VALID = 1 * 1000L;
+
+    private static final long REFRESH_TOKEN_VALID = 20 * 1000L;
 
     //기본 비밀 키 생성
     public JwtProvider() {
         this.SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
-    public String generateToken(Long memberId, String memberName) {
+    public String generateAccessToken(Long memberId, String email, String memberName) {
 
         Date now = new Date();
         Date expired = new Date(now.getTime() + ACCESS_TOKEN_VALID);
@@ -28,11 +33,25 @@ public class JwtProvider {
         return Jwts.builder()
                 .setSubject(String.valueOf(memberId))   // sub
                 .claim("name", memberName)        // custom claim
+                .claim("email", email)
                 .setIssuedAt(now)                       // iat. 발급시간
                 .setExpiration(expired)                 // exp. 만료시간
                 .signWith(SECRET_KEY, SignatureAlgorithm.HS256) // HS256 비밀키 서명
                 .compact();
 
+    }
+
+    public String generateRefreshToken(Long memberId, String email, String memberName) {
+        Date now = new Date();
+        Date expired = new Date(now.getTime() + REFRESH_TOKEN_VALID);
+        return Jwts.builder()
+                .setSubject(String.valueOf(memberId))
+                .claim("name", memberName)
+                .claim("email", email)
+                .setIssuedAt(now)
+                .setExpiration(expired)
+                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
+                .compact();
     }
 
     public Claims getClaimsFromToken(String token) {
